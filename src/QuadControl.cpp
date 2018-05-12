@@ -69,11 +69,38 @@ VehicleCommand QuadControl::GenerateMotorCommands(float collThrustCmd, V3F momen
   // You'll need the arm length parameter L, and the drag/thrust ratio kappa
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+    
+  /*
+   fc: collective force (thrust) (N)
+   M: moment 3x1 (x,y,z) (r/sec)
+   F: force 4x1 of four rotors (N)
+   T: Torque 4x1 of each rotor (r/sec)
+   kappa: ratio between thrust and torque where torque = kappa * thrust
+   
+   (fc, M) => F
 
-  cmd.desiredThrustsN[0] = mass * 9.81f / 4.f; // front left
-  cmd.desiredThrustsN[1] = mass * 9.81f / 4.f; // front right
-  cmd.desiredThrustsN[2] = mass * 9.81f / 4.f; // rear left
-  cmd.desiredThrustsN[3] = mass * 9.81f / 4.f; // rear right
+   fc = sum(F)
+   Mx = (f1 - f2 - f3 + f4) l
+   My = (f1 + f2 - f3 - f4) l
+   Mz = sum(T) = -(sum(F) * kappa)
+  */
+  
+  float l = L / sqrtf(2.0f);
+  
+  float fc = collThrustCmd;
+  float fx = momentCmd.x / l;
+  float fy = momentCmd.y / l;
+  float fz = -(momentCmd.z / kappa);
+  
+  cmd.desiredThrustsN[0] = (fc + fx + fy + fz) / 4.f; // front left
+  cmd.desiredThrustsN[1] = (fc - fx + fy - fz) / 4.f; // front right
+  cmd.desiredThrustsN[3] = (fc - fx - fy + fz) / 4.f; // rear right
+  cmd.desiredThrustsN[2] = (fc + fx - fy - fz) / 4.f; // rear left
+  
+//  cmd.desiredThrustsN[0] = mass * 9.81f / 4.f; // front left
+//  cmd.desiredThrustsN[1] = mass * 9.81f / 4.f; // front right
+//  cmd.desiredThrustsN[2] = mass * 9.81f / 4.f; // rear left
+//  cmd.desiredThrustsN[3] = mass * 9.81f / 4.f; // rear right
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
@@ -94,12 +121,14 @@ V3F QuadControl::BodyRateControl(V3F pqrCmd, V3F pqr)
   //  - you'll need parameters for moments of inertia Ixx, Iyy, Izz
   //  - you'll also need the gain parameter kpPQR (it's a V3F)
 
+  
   V3F momentCmd;
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+  V3F err = pqrCmd - pqr;
+  V3F u_ = err * kpPQR;
 
-  
-
+  momentCmd = u_ * Ixyz;
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
   return momentCmd;
@@ -128,8 +157,18 @@ V3F QuadControl::RollPitchControl(V3F accelCmd, Quaternion<float> attitude, floa
   Mat3x3F R = attitude.RotationMatrix_IwrtB();
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+  float accelThrustCmd = -collThrustCmd / mass;
+  float bXc = accelCmd.x / accelThrustCmd;
+  float bYc = accelCmd.y / accelThrustCmd;
 
-
+  float bX = R(0,2);
+  float bXerr = bXc - bX;
+  float bXcDot = kpBank * bXerr;
+  
+  float bY = R(1,2);
+  float bYerr = bYc - bY;
+  float bYcDot = kpBank * bYerr;
+  
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
