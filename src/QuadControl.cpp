@@ -96,18 +96,7 @@ VehicleCommand QuadControl::GenerateMotorCommands(float collThrustCmd, V3F momen
   cmd.desiredThrustsN[1] = (fc - fx + fy - fz) / 4.f; // front right
   cmd.desiredThrustsN[3] = (fc - fx - fy + fz) / 4.f; // rear right
   cmd.desiredThrustsN[2] = (fc + fx - fy - fz) / 4.f; // rear left
-
-  //TODO: should we constrain thrust for each motor?
-//  cmd.desiredThrustsN[0] = CONSTRAIN((fc + fx + fy + fz) / 4.f, minMotorThrust, maxMotorThrust); // front left
-//  cmd.desiredThrustsN[1] = CONSTRAIN((fc - fx + fy - fz) / 4.f, minMotorThrust, maxMotorThrust); // front right
-//  cmd.desiredThrustsN[3] = CONSTRAIN((fc - fx - fy + fz) / 4.f, minMotorThrust, maxMotorThrust); // rear right
-//  cmd.desiredThrustsN[2] = CONSTRAIN((fc + fx - fy - fz) / 4.f, minMotorThrust, maxMotorThrust); // rear left
   
-//  cmd.desiredThrustsN[0] = mass * 9.81f / 4.f; // front left
-//  cmd.desiredThrustsN[1] = mass * 9.81f / 4.f; // front right
-//  cmd.desiredThrustsN[2] = mass * 9.81f / 4.f; // rear left
-//  cmd.desiredThrustsN[3] = mass * 9.81f / 4.f; // rear right
-
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
   return cmd;
@@ -305,8 +294,6 @@ float QuadControl::YawControl(float yawCmd, float yaw)
 
   float yawRateCmd=0;
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
-  //TODO: bound yaw and fix direction
-  
   float yawErr = fmod(yawCmd - yaw, 2*pi);
   if (yawErr < -pi || yawErr > pi) {
     yawErr += 2*pi * ((yawErr < 0) ? 1 : -1);
