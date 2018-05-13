@@ -32,6 +32,8 @@ public:
 
   // -------------- PARAMETERS --------------
 
+  const float pi = float(M_PI);
+  
   // controller gains
   float kpPosXY, kpPosZ;
   float kpVelXY, kpVelZ;

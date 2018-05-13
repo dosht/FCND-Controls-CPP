@@ -224,10 +224,12 @@ float QuadControl::AltitudeControl(float posZCmd, float velZCmd, float posZ, flo
   
   float pTerm = kpPosZ * zErr;
   float dTerm = kpVelZ * zDotErr;
+  integratedAltitudeError += zErr * dt;
+  float iTerm = KiPosZ * integratedAltitudeError;
   
   float bZ = R(2,2);
   
-  float u1Bar = pTerm + dTerm + accelZCmd;
+  float u1Bar = pTerm + dTerm + iTerm + accelZCmd;
   float u1 = (u1Bar - float(CONST_GRAVITY)) * mass;
   
   //TODO: bound thrust
@@ -304,11 +306,15 @@ float QuadControl::YawControl(float yawCmd, float yaw)
   float yawRateCmd=0;
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
   //TODO: bound yaw and fix direction
-  float yawErr = yawCmd - yaw;
+  
+  float yawErr = fmod(yawCmd - yaw, 2*pi);
+  if (yawErr < -pi || yawErr > pi) {
+    yawErr += 2*pi * ((yawErr < 0) ? 1 : -1);
+  }
   yawRateCmd = kpYaw * yawErr;
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
-
+  
   return yawRateCmd;
 
 }
