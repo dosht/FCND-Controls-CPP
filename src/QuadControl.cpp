@@ -91,11 +91,17 @@ VehicleCommand QuadControl::GenerateMotorCommands(float collThrustCmd, V3F momen
   float fx = momentCmd.x / l;
   float fy = momentCmd.y / l;
   float fz = -(momentCmd.z / kappa);
-  
+
   cmd.desiredThrustsN[0] = (fc + fx + fy + fz) / 4.f; // front left
   cmd.desiredThrustsN[1] = (fc - fx + fy - fz) / 4.f; // front right
   cmd.desiredThrustsN[3] = (fc - fx - fy + fz) / 4.f; // rear right
   cmd.desiredThrustsN[2] = (fc + fx - fy - fz) / 4.f; // rear left
+
+  
+//  cmd.desiredThrustsN[0] = CONSTRAIN((fc + fx + fy + fz) / 4.f, minMotorThrust, maxMotorThrust); // front left
+//  cmd.desiredThrustsN[1] = CONSTRAIN((fc - fx + fy - fz) / 4.f, minMotorThrust, maxMotorThrust); // front right
+//  cmd.desiredThrustsN[3] = CONSTRAIN((fc - fx - fy + fz) / 4.f, minMotorThrust, maxMotorThrust); // rear right
+//  cmd.desiredThrustsN[2] = CONSTRAIN((fc + fx - fy - fz) / 4.f, minMotorThrust, maxMotorThrust); // rear left
   
 //  cmd.desiredThrustsN[0] = mass * 9.81f / 4.f; // front left
 //  cmd.desiredThrustsN[1] = mass * 9.81f / 4.f; // front right
@@ -211,11 +217,23 @@ float QuadControl::AltitudeControl(float posZCmd, float velZCmd, float posZ, flo
   float thrust = 0;
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
-
-
-
-  /////////////////////////////// END STUDENT CODE ////////////////////////////
+//  posZCmd = -4;
+  float zErr = posZCmd - posZ;
+  float zDotErr = velZCmd - velZ;
+//  printf("zErr: %f, zDotErr: %f", zErr, zDotErr);
   
+  float pTerm = kpPosZ * zErr;
+  float dTerm = kpVelZ * zDotErr;
+  
+  float bZ = R(2,2);
+  
+  float u1Bar = pTerm + dTerm + accelZCmd;
+  
+  //TODO: bound thrust
+  thrust = -u1Bar * mass / bZ;
+//  printf("Thrust: %f\n", thrust);
+  
+  /////////////////////////////// END STUDENT CODE ////////////////////////////
   return thrust;
 }
 
