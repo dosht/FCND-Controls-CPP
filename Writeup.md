@@ -1,11 +1,13 @@
 # Project: Building a Controller
 
 I started by implementing the python controller [link](https://github.com/dosht/FCND-Controls/blob/master/controls_flyer.py)
-and then moved all control code to the C++ controller. I tested the controlers in this sequence: (motoros commands, body rate controler and roll-pitch controller), then yaw controller, then altitude contoller and lateral controller, and then I added the integeral term to the altitude contoller to mass error in scnario 4, and finally I spend good time tuning parameteres and test between all scenarios. I found when I keep the ratio between related parameters, it could converge easily to the good set of parameters e.g. `kpPosZ, kdPosZ, kiPosZ` or `kpPosXY, kdPosXY`. The lowers level params like `kpBank` and `kpPQR`, I didn't need to tune a lot after passing the attitude scenario.
+and then moved all control code to the C++ controller. I tested the controlers in this sequence: (motoros commands, body rate controler and roll-pitch controller), then yaw controller, then (the altitude contoller and lateral controller), and then I added the integeral term to the altitude contoller to correct the mass error in scnario 4, and finally I spend good time tuning parameteres and test between all scenarios. I found that when I keep the ratio between related parameters, it could converge easily to the good set of parameters e.g. `kpPosZ, kdPosZ, kiPosZ` or `kpPosXY, kdPosXY`. And for the lowers level params like `kpBank` and `kpPQR`, I didn't need to tune a lot after passing the attitude scenario.
 
 ### Controller Video
 
-[![Controller Video](http://img.youtube.com/vi/HWr-DwxJvTk/0.jpg)](http://www.youtube.com/watch?v=HWr-DwxJvTk)
+[![Controller CPP Video](http://img.youtube.com/vi/HWr-DwxJvTk/0.jpg)](http://www.youtube.com/watch?v=HWr-DwxJvTk)
+
+[![Controller Python Video](http://img.youtube.com/vi/tLjBsSSHIFA/0.jpg)](http://www.youtube.com/watch?v=tLjBsSSHIFA)
 
 
 ## Implemented body rate control in C++
